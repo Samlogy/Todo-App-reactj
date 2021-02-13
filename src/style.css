@@ -27,14 +27,14 @@ li { list-style-type: none }
     cursor: pointer;
 }
 
+
 .add-todo form {
     display: flex;
     flex-direction: column;
     width: 500px;
     margin: 1rem auto;
 }
-
-.add-todo input, .add-todo textarea, .add-todo button{
+.add-todo input, .add-todo textarea, .add-todo button, .todo-list .search-todo input{
     width: 20rem;
     padding: .75rem;
     margin: 0 auto 1rem auto;
@@ -44,12 +44,33 @@ li { list-style-type: none }
     outline: none;
     transition: background .25s, color .25s;
 }
+.add-todo label {
+  width: 20rem;
+  margin: 0 auto .25rem auto;
+  font-weight: 500;
+}
+
 .add-todo textarea { height: 6rem }
-.add-todo input:focus, .add-todo textarea:focus { border: .15rem solid #625df5 }
+.add-todo input:focus, .add-todo textarea:focus, .todo-list .search-todo input:focus { border: .15rem solid #625df5 }
 .add-todo button:hover {
     border: .1rem solid #625df5;
     background-color: #625df5;
     color: #fefefe;
+}
+.form-input {
+  display: flex;
+  flex-direction: column;
+}
+.form-input .completed {
+  width: 20rem;
+  margin: 0 auto .25rem auto;
+  display: flex;
+  flex-direction: column;
+}
+.form-input .completed div { display: flex; justify-content: center }
+.form-input .completed div * {
+  margin: auto 0;
+  width: 2rem;
 }
 
 /* list */
@@ -81,6 +102,22 @@ li { list-style-type: none }
 .todo-list .group-btn .icon { padding: .4rem; border-radius: 50%; transition: all .25s; cursor: pointer;}
 .todo-list .group-btn .icon:hover { background-color: lightgray }
 .todo-list .group-btn svg { font-size: 1.3rem; color: #333 }
+
+.todo-list .search-todo {
+  width: 500px;
+  margin: 1rem auto;
+}
+
+.todo-list .search-todo span {
+  margin-right: 1rem;
+  font-weight: 500;
+}
+
+.add-todo label {
+width: 20rem;
+margin: 0 auto .25rem auto;
+font-weight: 500;
+}
 
 /* Modal Box */
 .outerStyle {
@@ -144,4 +181,32 @@ li { list-style-type: none }
 }
 .modal .btn:hover {
   cursor: pointer;
+}
+
+
+/* Spinner */
+.loading {
+	/* opacity: 0; */
+	display: flex;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%);
+	transition: opacity .3s ease-in;
+}
+.loading.show { opacity: 1 }
+.ball {
+	background-color: #777;
+	border-radius: 50%;
+	margin: 5px;
+	height: 10px;
+	width: 10px;
+	animation: jump .5s ease-in infinite;
+}
+.ball:nth-of-type(2) { animation-delay: 0.1s }
+.ball:nth-of-type(3) { animation-delay: 0.2s }
+
+@keyframes jump {
+	0%, 100% { transform: translateY(0) }
+	50% { transform: translateY(-10px) }
 }
