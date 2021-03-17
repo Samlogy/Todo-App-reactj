@@ -1,4 +1,4 @@
-import './style.css';
+// import './style.css';
 
 const Modal = props => {
     const { isModalOpen, closeModal, children } = props;

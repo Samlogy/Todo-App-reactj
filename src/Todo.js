@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { GrFormClose } from 'react-icons/gr'
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs'
-
+import data from './data';
 import Modal from './Modal';
 import './style.css';
 
@@ -26,7 +26,6 @@ const Todo = () => {
     const AddFeature = label => {
         clearForm(); setLabel(label);
     };
-
     // API calls
     const add = e => {
         e.preventDefault();
@@ -61,7 +60,10 @@ const Todo = () => {
         const url ='https://jsonplaceholder.typicode.com/todos';
         fetch(url)
         .then(res => res.json())
-        .then(res => setTodos({ data: res, loading: false }))
+        .then(res => {
+            const data = res.slice(0, limit);
+            setTodos({ data: data, loading: false });
+        })
         .catch(err => console.log(err.mesage));
     };
 
@@ -87,7 +89,7 @@ const Todo = () => {
         return <div className='add-todo'>
                     <h2>Add Todo</h2>
     
-                    <form method="post" onSubmit={e => add(e)}> 
+                    <form method="post" onSubmit={add}> 
                         <div className='form-input'>
                             <label htmlFor='id'> ID </label>
                             <input type="number" name="id" placeholder="ID" id='id'
@@ -118,7 +120,7 @@ const Todo = () => {
                             </div>
                         </div>
     
-                        <button type="submit"> ADD TASK </button>
+                        <button type="submit" className='btn'> ADD TASK </button>
                     </form>
                 </div>
     };
@@ -177,10 +179,10 @@ const Todo = () => {
                     <hr />
 
                     <div className='modal-footer'>
-                        <button className='btn remove' onClick={() => remove(todo)}>
+                        <button className='btn btn-remove' onClick={() => remove(todo)}>
                             Remove
                         </button>
-                        <button className='btn' onClick={closeModal}>
+                        <button className='btn btn-outline' onClick={closeModal}>
                             Close
                         </button>
                     </div>
@@ -189,9 +191,10 @@ const Todo = () => {
     const todoList = () => {
         return  <div className='todo-list'>
                     <h2> Todo List</h2>
-                    
+
                     { searchTodo() }
-                    { (Array.isArray(searchOp.result) && searchOp.result.length > 0) && <span>Suggestions: {searchOp.result.length} </span> }
+                    { ( Array.isArray(searchOp.result) && searchOp.result.length > 0 ) && 
+                            <span>Suggestions: {searchOp.result.length} </span> }
 
                     <ul>
                         {!todos.loading && 
@@ -211,8 +214,8 @@ const Todo = () => {
                                 <li> {todo.completed} </li>
 
                                 <div className='group-btn'>
-                                    <BsPencilSquare onClick={() => {setTodo(todo);setLabel('edit')}} className='icon' />
-                                    <BsTrashFill onClick={() => { setTodo(todo);openModal();}} className='icon' />
+                                    <BsPencilSquare onClick={() => { setTodo(todo);setLabel('edit')}} className='icon' />
+                                    <BsTrashFill onClick={() => { setTodo(todo);openModal()}} className='icon' />
                                 </div>
                             </div>  ) :  Spinner() }
                     </ul>
@@ -236,23 +239,25 @@ const Todo = () => {
     // Infinite Scroll
     window.addEventListener('scroll', () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        // console.log( { scrollTop, scrollHeight, clientHeight });
         if(clientHeight + scrollTop >= scrollHeight - 5) beforeFetching(); // show the loading animation
     });
-
     const beforeFetching = () => {
         console.log('Before Fetch !')
         setTodos({...todos, loading: true }); // show spinner before loading data
-        setTimeout(moreTodos, 1000); // load more data
+        setTimeout(moreTodos(5), 1000);  // load more data
         console.log('more Todos !')
     };
-    
-    const moreTodos = async () => {
+    const moreTodos = limit => {
         // show spinner, load data & set it in state
         const url ='https://jsonplaceholder.typicode.com/todos';
         fetch(url)
         .then(res => res.json())
-        .then(res => {setTodos({ data: res, loading: false }); console.log('Fetching !')})
+        .then(res => {
+            const nbrTodos = todos.data.length - 1;
+            const data = res.slice(nbrTodos, nbrTodos+limit);
+            setTodos({ data, loading: false }); 
+            console.log('Fetching !')
+        })
         .catch(err => console.log(err.mesage));
     };
 
@@ -269,12 +274,11 @@ const Todo = () => {
         <div className="todo-container">
             <ul className='menu'>
                 <li onClick={() => setLabel('all')}> All Tasks </li>
-                <li onClick={() => { AddFeature('add') }}> Add Task </li>
+                <li onClick={() => AddFeature('add')}> Add Task </li>
             </ul>
 
             <div className='container'>
-                { label && label ? showCpt(label) :  'loading label' }
-                {/* { todos.loading ? 'loading ' : '' } */}
+                { (label && label) && showCpt(label) }
                 { isModalOpen && removeTodo() }
             </div>
         </div>
